@@ -4,84 +4,130 @@ function Pythagorean() {
   const [calculationOption, setCalculationOption] = useState('side_a');
   const [sideA, setSideA] = useState('');
   const [sideB, setSideB] = useState('');
+  const [sideC, setSideC] = useState('');
   const [result, setResult] = useState('');
   const [unit, setUnit] = useState('cm');
 
   const handleOptionChange = (e) => {
     const selectedOption = e.target.value;
     setCalculationOption(selectedOption);
+    clearInputs();
+  };
+
+  const clearInputs = () => {
     setSideA('');
     setSideB('');
+    setSideC('');
     setResult('');
   };
 
   const calculate = () => {
     const a = parseFloat(sideA);
     const b = parseFloat(sideB);
+    const c = parseFloat(sideC);
 
-    if (!isNaN(a) && !isNaN(b)) {
+    if (!isNaN(a) ) {
+      let calculatedResult = '';
+
       switch (calculationOption) {
         case 'side_a':
-          setResult(`Side A = ${a} ${unit}`);
-          setSideB(Math.sqrt(b * b - a * a).toFixed(2));
+          calculatedResult = `Side A = ${Math.sqrt(c * c - b * b).toFixed(2)} ${unit}`;
           break;
         case 'side_b':
-          setResult(`Side B = ${b} ${unit}`);
-          setSideA(Math.sqrt(a * a - b * b).toFixed(2));
+          calculatedResult = `Side B = ${Math.sqrt(c * c - a * a).toFixed(2)} ${unit}`;
           break;
-        case 'hypotenuse':
-          setResult(`Hypotenuse (C) = ${Math.sqrt(a * a + b * b).toFixed(2)} ${unit}`);
+        case 'side_c':
+          calculatedResult = `Hypotenuse (C) = ${Math.sqrt(a * a + b * b).toFixed(2)} ${unit}`;
           break;
         case 'area':
-          setResult(`Area (A) = ${(0.5 * a * b).toFixed(2)} square ${unit}`);
+          calculatedResult = `Area (A) = ${(0.5 * a * b).toFixed(2)} square ${unit}`;
           break;
         default:
-          setResult('');
+          break;
       }
+
+      setResult(calculatedResult);
     } else {
-      setResult('Please enter valid numbers for Side A and Side B.');
+      setResult('Please enter valid numbers for Side A, Side B, and Hypotenuse.');
     }
   };
 
-  const getInputLabelsAndPlaceholders = () => {
-    let labelA = 'Side A';
-    let placeholderA = 'Enter Side A';
-    let labelB = 'Side B';
-    let placeholderB = 'Enter Side B';
+  const renderSideAInput = () => (
+    <div>
+      <label htmlFor="sideA">Side A:</label>
+      <input
+        type="number"
+        id="sideA"
+        step="0.01"
+        value={sideA}
+        onChange={(e) => setSideA(e.target.value)}
+        placeholder="Enter Side A"
+      />
+    </div>
+  );
 
+  const renderSideBInput = () => (
+    <div>
+      <label htmlFor="sideB">Side B:</label>
+      <input
+        type="number"
+        id="sideB"
+        step="0.01"
+        value={sideB}
+        onChange={(e) => setSideB(e.target.value)}
+        placeholder="Enter Side B"
+      />
+    </div>
+  );
+
+  const renderSideCInput = () => (
+    <div>
+      <label htmlFor="sideC">Hypotenuse (C):</label>
+      <input
+        type="number"
+        id="sideC"
+        step="0.01"
+        value={sideC}
+        onChange={(e) => setSideC(e.target.value)}
+        placeholder="Enter Hypotenuse"
+      />
+    </div>
+  );
+
+  const renderInputFields = () => {
     switch (calculationOption) {
       case 'side_a':
-        labelA = 'Side B';
-        placeholderA = 'Enter Side B';
-        labelB = 'Hypotenuse (C)';
-        placeholderB = 'Enter Hypotenuse';
-        break;
+        return (
+          <>
+            {renderSideBInput()}
+            {renderSideCInput()}
+          </>
+        );
       case 'side_b':
-        labelA = 'Side A';
-        placeholderA = 'Enter Side A';
-        labelB = 'Hypotenuse (C)';
-        placeholderB = 'Enter Hypotenuse';
-        break;
-      case 'hypotenuse':
-        labelA = 'Side A';
-        placeholderA = 'Enter Side A';
-        labelB = 'Side B';
-        placeholderB = 'Enter Side B';
-        break;
+        return (
+          <>
+            {renderSideAInput()}
+            {renderSideCInput()}
+          </>
+        );
+      case 'side_c':
+        return (
+          <>
+            {renderSideAInput()}
+            {renderSideBInput()}
+          </>
+        );
       case 'area':
-        labelA = 'Side A';
-        placeholderA = 'Enter Side A';
-        labelB = 'Side B';
-        placeholderB = 'Enter Side B';
-        break;
+        return (
+          <>
+            {renderSideAInput()}
+            {renderSideBInput()}
+          </>
+        );
       default:
-        break;
+        return null;
     }
-
-    return { labelA, placeholderA, labelB, placeholderB };
   };
-
-  const { labelA, placeholderA, labelB, placeholderB } = getInputLabelsAndPlaceholders();
 
   return (
     <div className="container">
@@ -94,29 +140,12 @@ function Pythagorean() {
       >
         <option value="side_a">Side A</option>
         <option value="side_b">Side B</option>
-        <option value="hypotenuse">Hypotenuse (C)</option>
+        <option value="side_c">Hypotenuse (C)</option>
         <option value="area">Area (A)</option>
       </select>
 
       <div id="inputFields">
-        <label htmlFor="sideA">{labelA}:</label>
-        <input
-          type="number"
-          id="sideA"
-          step="0.01"
-          value={sideA}
-          onChange={(e) => setSideA(e.target.value)}
-          placeholder={placeholderA}
-        />
-        <label htmlFor="sideB">{labelB}:</label>
-        <input
-          type="number"
-          id="sideB"
-          step="0.01"
-          value={sideB}
-          onChange={(e) => setSideB(e.target.value)}
-          placeholder={placeholderB}
-        />
+        {renderInputFields()}
       </div>
 
       {result && (
@@ -131,8 +160,14 @@ function Pythagorean() {
         value={unit}
         onChange={(e) => setUnit(e.target.value)}
       >
+        <option value="km">km</option>
+        <option value="m">m</option>
         <option value="cm">cm</option>
-        <option value="inch">inch</option>
+        <option value="mm">mm</option>
+        <option value="mi">mi</option>
+        <option value="yd">yd</option>
+        <option value="ft">ft</option>
+        <option value="in">in</option>
       </select>
 
       <button onClick={calculate}>Calculate</button>
